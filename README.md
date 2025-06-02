@@ -1,7 +1,7 @@
 HEAD
 # btd-union
 
-# Welcome to your Lovable project
+# Welcome to your react-vite-project
 
 ## Project info
 
