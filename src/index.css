@@ -1,0 +1,86 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 5.9% 10%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 240 5% 64.9%;
+    --radius: 0.75rem;
+  }
+
+  * {
+    @apply border-border selection:bg-white/10 selection:text-white;
+  }
+  
+  html {
+    @apply scroll-smooth;
+    scroll-behavior: smooth;
+    scroll-snap-type: y mandatory;
+  }
+  
+  body {
+    @apply bg-background text-foreground antialiased;
+    scroll-behavior: smooth;
+  }
+
+  /* Add a custom scroll animation to make it slower */
+  @keyframes slowScroll {
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(-100%);
+    }
+  }
+
+  .profile-card {
+    @apply bg-card/50 backdrop-blur-sm border border-white/10 rounded-lg p-6 transition-all duration-300 hover:scale-105;
+  }
+
+  .nav-link {
+    @apply text-muted-foreground hover:text-white transition-colors;
+  }
+
+  .section-title {
+    @apply text-4xl font-bold mb-8;
+  }
+
+  .fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+@layer utilities {
+  .slow-scroll {
+    animation: slowScroll 2s ease-in-out;
+  }
+}
