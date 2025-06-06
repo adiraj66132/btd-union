@@ -1,18 +1,23 @@
 import { Moon, Menu, X } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ThemeSwitch from './ThemeSwitch';
 
+const SECTIONS = ['home', 'profiles', 'about'] as const;
+type Section = typeof SECTIONS[number];
+
 const Header = () => {
-  const [activeSection, setActiveSection] = useState('home');
+  const [activeSection, setActiveSection] = useState<Section>('home');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      const sections = ['home', 'profiles', 'about'];
-      const scrollPosition = window.scrollY + window.innerHeight / 2;
+  // Debounced scroll handler
+  const handleScroll = useCallback(() => {
+    const scrollPosition = window.scrollY + window.innerHeight / 2;
+    let newSection: Section = activeSection;
 
-      for (const section of sections) {
+    // Use requestAnimationFrame for smooth performance
+    requestAnimationFrame(() => {
+      for (const section of SECTIONS) {
         const element = document.getElementById(section);
         if (element) {
           const { top, bottom } = element.getBoundingClientRect();
@@ -20,25 +25,78 @@ const Header = () => {
           const elementBottom = bottom + window.scrollY;
 
           if (scrollPosition >= elementTop && scrollPosition <= elementBottom) {
-            setActiveSection(section);
+            newSection = section;
             break;
           }
         }
       }
+
+      if (newSection !== activeSection) {
+        setActiveSection(newSection);
+      }
+    });
+  }, [activeSection]);
+
+  useEffect(() => {
+    // Throttle scroll events
+    let ticking = false;
+    const scrollListener = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          handleScroll();
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+    window.addEventListener('scroll', scrollListener, { passive: true });
+    return () => window.removeEventListener('scroll', scrollListener);
+  }, [handleScroll]);
 
-  const scrollToSection = (sectionId: string) => {
+  const scrollToSection = useCallback((sectionId: Section) => {
     const element = document.getElementById(sectionId);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
       setActiveSection(sectionId);
       setIsMobileMenuOpen(false);
     }
-  };
+  }, []);
+
+  // Memoize navigation buttons to prevent unnecessary re-renders
+  const NavigationButton = useMemo(() => {
+    return ({ section }: { section: Section }) => (
+      <button
+        onClick={() => scrollToSection(section)}
+        className={`nav-link relative px-3 py-2 rounded-md transition-colors ${
+          activeSection === section
+            ? 'text-foreground font-medium'
+            : 'text-foreground/60 hover:text-foreground'
+        }`}
+      >
+        {section.charAt(0).toUpperCase() + section.slice(1)}
+        {activeSection === section && (
+          <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-red-500 rounded-full" />
+        )}
+      </button>
+    );
+  }, [activeSection, scrollToSection]);
+
+  // Memoize mobile navigation buttons
+  const MobileNavigationButton = useMemo(() => {
+    return ({ section }: { section: Section }) => (
+      <button
+        onClick={() => scrollToSection(section)}
+        className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
+          activeSection === section
+            ? 'bg-accent text-foreground'
+            : 'text-foreground/60 hover:bg-accent/50 hover:text-foreground'
+        }`}
+      >
+        {section.charAt(0).toUpperCase() + section.slice(1)}
+      </button>
+    );
+  }, [activeSection, scrollToSection]);
   
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/40 shadow-sm">
@@ -58,21 +116,8 @@ const Header = () => {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-6">
-            {['home', 'profiles', 'about'].map((section) => (
-              <button
-                key={section}
-                onClick={() => scrollToSection(section)}
-                className={`nav-link relative px-3 py-2 rounded-md transition-colors ${
-                  activeSection === section
-                    ? 'text-foreground font-medium'
-                    : 'text-foreground/60 hover:text-foreground'
-                }`}
-              >
-                {section.charAt(0).toUpperCase() + section.slice(1)}
-                {activeSection === section && (
-                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-red-500 rounded-full" />
-                )}
-              </button>
+            {SECTIONS.map((section) => (
+              <NavigationButton key={section} section={section} />
             ))}
             <ThemeSwitch />
           </nav>
@@ -101,18 +146,8 @@ const Header = () => {
               className="md:hidden mt-4"
             >
               <div className="flex flex-col space-y-2 py-2">
-                {['home', 'profiles', 'about'].map((section) => (
-                  <button
-                    key={section}
-                    onClick={() => scrollToSection(section)}
-                    className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
-                      activeSection === section
-                        ? 'bg-accent text-foreground'
-                        : 'text-foreground/60 hover:bg-accent/50 hover:text-foreground'
-                    }`}
-                  >
-                    {section.charAt(0).toUpperCase() + section.slice(1)}
-                  </button>
+                {SECTIONS.map((section) => (
+                  <MobileNavigationButton key={section} section={section} />
                 ))}
                 <div className="w-full px-4 py-3">
                   <ThemeSwitch />
