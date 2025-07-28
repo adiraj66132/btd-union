@@ -1,4 +1,3 @@
-HEAD
 # btd-union
 
 # Welcome to your react-vite-project
