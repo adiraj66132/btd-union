@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 const members = [
   {
     name: "Adiraj",
-    description: "He is a full-stack programmer with a mind full of creative ideas. A true problem-solver, passionate about building smart solutions—oh, and a proud Linux user who loves clean, efficient systems."
+    description: "<Error>No valid data found.</Error>"
   },
   {
     name: "Angshuman",

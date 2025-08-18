@@ -4,11 +4,11 @@ import { motion } from 'framer-motion';
 const profiles = [
   {
     name: "Adiraj",
-    role: "Development & UI/UX Designer",
-    subtitle: "Fullstack-Developer",
-    instagram: "@ark_adiraj",
-    instagramUrl: "https://instagram.com/ark_adiraj",
-    image: "/Images/adi.jpg"
+    role: "------",
+    subtitle: "Developer",
+    instagram: "@diraj",
+    instagramUrl: "https://instagram.com/adiraj_ark",
+    image: "/Images/adi2.jpg"
   },
   {
     name: "Angsuman",
@@ -23,7 +23,7 @@ const profiles = [
     role: "Academic Achiever",
     subtitle: "High Achiever",
     instagram: "@instagram",
-    instagramUrl: "https://instagram.com/instagram",
+    instagramUrl: "https://www.instagram.com/dsta.lker18/",
     image: "/Images/dawar.jpg"
   },
   {
@@ -31,7 +31,7 @@ const profiles = [
     role: "mischievous guy",
     subtitle: "Humorous",
     instagram: "@ishandeepkalita",
-    instagramUrl: "https://instagram.com/ishandeepkalita",
+    instagramUrl: "https://instagram.com/ishandeepkalita7",
     image: "/Images/ishandeep.jpg"
   },
   {
@@ -47,7 +47,7 @@ const profiles = [
     role: "Casanova",
     subtitle: "Frontbone of BTD",
     instagram: "@prabal___freestyle",
-    instagramUrl: "https://instagram.com/prabal___freestyle",
+    instagramUrl: "https://www.instagram.com/prabal____freestyle___/",
     image: "/Images/prabal.png"
   }
 ];
