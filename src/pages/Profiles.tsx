@@ -6,7 +6,7 @@ const profiles = [
     name: "Adiraj",
     role: "------",
     subtitle: "Developer",
-    instagram: "@diraj",
+    instagram: "@adiraj",
     instagramUrl: "https://instagram.com/adiraj_ark",
     image: "/Images/adi2.jpg"
   },
