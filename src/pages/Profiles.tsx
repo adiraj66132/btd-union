@@ -8,7 +8,7 @@ const profiles = [
     subtitle: "Developer",
     instagram: "@adiraj",
     instagramUrl: "https://instagram.com/adiraj_ark",
-    image: "/Images/adi(1).png"
+    image: "adi.png"
   },
   {
     name: "Angsuman",
