@@ -42,13 +42,13 @@ const ThemeSwitch = () => {
               exit={{ opacity: 0 }}
               className="absolute inset-0 bg-background/80 backdrop-blur-sm"
             />
-            
+
             {/* Message Box */}
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              transition={{ 
+              transition={{
                 duration: 0.2,
                 ease: [0.16, 1, 0.3, 1] // Custom ease curve for smooth animation
               }}
@@ -58,9 +58,9 @@ const ThemeSwitch = () => {
                 "min-w-[280px] max-w-[90vw] md:max-w-[420px]", // Min and max widths
                 "mx-4 p-6", // Consistent padding
                 "rounded-xl", // Slightly larger border radius
-                "border-2 border-red-500/80",
-                "bg-background/95 backdrop-blur-sm",
-                "shadow-xl shadow-red-500/20", // Enhanced shadow
+                "liquid-glass-strong", // Liquid glass effect
+                "border-red-500/50", // Red border accent
+                "shadow-red-500/20", // Red shadow accent
                 "text-center"
               )}
             >
