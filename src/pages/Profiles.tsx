@@ -85,7 +85,11 @@ const Profiles = () => {
                   <div className="relative w-32 h-32 mb-6 rounded-full overflow-hidden border-2 border-white/10 group-hover:border-white/30 transition-all duration-500 shadow-inner">
                     <img
                       src={profile.image}
-                      alt={profile.name}
+                      alt={`${profile.name} profile photo`}
+                      loading="lazy"
+                      decoding="async"
+                      width={128}
+                      height={128}
                       className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
