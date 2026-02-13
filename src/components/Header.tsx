@@ -1,60 +1,85 @@
 import { Menu, X } from 'lucide-react';
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, memo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ThemeSwitch from './ThemeSwitch';
 
 const SECTIONS = ['home', 'profiles', 'about'] as const;
 type Section = typeof SECTIONS[number];
 
+const NavigationButton = memo(({ section, activeSection, onClick }: { section: Section; activeSection: Section; onClick: () => void }) => (
+  <button
+    onClick={onClick}
+    className={`relative px-4 py-2 rounded-full transition-all duration-300 ${activeSection === section
+      ? 'text-white liquid-glass shadow-[0_0_20px_rgba(255,255,255,0.2)]'
+      : 'text-muted-foreground hover:text-white hover:bg-white/5'
+      }`}
+  >
+    <span className="relative z-10 capitalize">{section}</span>
+    {activeSection === section && (
+      <motion.div
+        layoutId="activeTab"
+        className="absolute inset-0 bg-white/10 rounded-full backdrop-blur-md"
+        transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+      />
+    )}
+  </button>
+));
+
+NavigationButton.displayName = 'NavigationButton';
+
+const MobileNavigationButton = memo(({ section, activeSection, onClick }: { section: Section; activeSection: Section; onClick: () => void }) => (
+  <button
+    onClick={onClick}
+    className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${activeSection === section
+      ? 'liquid-glass text-white'
+      : 'text-muted-foreground hover:bg-white/5 hover:text-white'
+      }`}
+  >
+    {section.charAt(0).toUpperCase() + section.slice(1)}
+  </button>
+));
+
+MobileNavigationButton.displayName = 'MobileNavigationButton';
+
 const Header = () => {
   const [activeSection, setActiveSection] = useState<Section>('home');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
-  // Debounced scroll handler
-  const handleScroll = useCallback(() => {
-    const scrollPosition = window.scrollY + window.innerHeight / 2;
-    setScrolled(window.scrollY > 20);
-    let newSection: Section = activeSection;
-
-    // Use requestAnimationFrame for smooth performance
-    requestAnimationFrame(() => {
-      for (const section of SECTIONS) {
-        const element = document.getElementById(section);
-        if (element) {
-          const { top, bottom } = element.getBoundingClientRect();
-          const elementTop = top + window.scrollY;
-          const elementBottom = bottom + window.scrollY;
-
-          if (scrollPosition >= elementTop && scrollPosition <= elementBottom) {
-            newSection = section;
-            break;
-          }
-        }
-      }
-
-      if (newSection !== activeSection) {
-        setActiveSection(newSection);
-      }
-    });
-  }, [activeSection]);
-
   useEffect(() => {
-    // Throttle scroll events
     let ticking = false;
-    const scrollListener = () => {
+    
+    const handleScroll = () => {
       if (!ticking) {
         window.requestAnimationFrame(() => {
-          handleScroll();
+          setScrolled(window.scrollY > 20);
+          
+          const scrollPosition = window.scrollY + window.innerHeight / 3;
+          let newSection: Section = 'home';
+          
+          for (const section of SECTIONS) {
+            const element = document.getElementById(section);
+            if (element) {
+              const { top } = element.getBoundingClientRect();
+              const elementTop = top + window.scrollY;
+              
+              if (scrollPosition >= elementTop) {
+                newSection = section;
+              }
+            }
+          }
+          
+          setActiveSection(newSection);
           ticking = false;
         });
         ticking = true;
       }
     };
 
-    window.addEventListener('scroll', scrollListener, { passive: true });
-    return () => window.removeEventListener('scroll', scrollListener);
-  }, [handleScroll]);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const scrollToSection = useCallback((sectionId: Section) => {
     const element = document.getElementById(sectionId);
@@ -65,42 +90,9 @@ const Header = () => {
     }
   }, []);
 
-  // Memoize navigation buttons to prevent unnecessary re-renders
-  const NavigationButton = useMemo(() => {
-    return ({ section }: { section: Section }) => (
-      <button
-        onClick={() => scrollToSection(section)}
-        className={`relative px-4 py-2 rounded-full transition-all duration-300 ${activeSection === section
-          ? 'text-white liquid-glass shadow-[0_0_20px_rgba(255,255,255,0.2)]'
-          : 'text-muted-foreground hover:text-white hover:bg-white/5'
-          }`}
-      >
-        <span className="relative z-10 capitalize">{section}</span>
-        {activeSection === section && (
-          <motion.div
-            layoutId="activeTab"
-            className="absolute inset-0 bg-white/10 rounded-full backdrop-blur-md"
-            transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-          />
-        )}
-      </button>
-    );
-  }, [activeSection, scrollToSection]);
-
-  // Memoize mobile navigation buttons
-  const MobileNavigationButton = useMemo(() => {
-    return ({ section }: { section: Section }) => (
-      <button
-        onClick={() => scrollToSection(section)}
-        className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${activeSection === section
-          ? 'liquid-glass text-white'
-          : 'text-muted-foreground hover:bg-white/5 hover:text-white'
-          }`}
-      >
-        {section.charAt(0).toUpperCase() + section.slice(1)}
-      </button>
-    );
-  }, [activeSection, scrollToSection]);
+  const handleNavClick = useCallback((section: Section) => {
+    scrollToSection(section);
+  }, [scrollToSection]);
 
   return (
     <header
@@ -126,7 +118,7 @@ const Header = () => {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-2 bg-black/20 backdrop-blur-lg p-1 rounded-full border border-white/5">
             {SECTIONS.map((section) => (
-              <NavigationButton key={section} section={section} />
+              <NavigationButton key={section} section={section} activeSection={activeSection} onClick={() => scrollToSection(section)} />
             ))}
             <div className="pl-2 border-l border-white/10 ml-2">
               <ThemeSwitch />
@@ -158,7 +150,7 @@ const Header = () => {
             >
               <div className="flex flex-col p-2">
                 {SECTIONS.map((section) => (
-                  <MobileNavigationButton key={section} section={section} />
+                  <MobileNavigationButton key={section} section={section} activeSection={activeSection} onClick={() => scrollToSection(section)} />
                 ))}
                 <div className="px-4 py-3 border-t border-white/5">
                   <ThemeSwitch />

@@ -1,5 +1,62 @@
+import { memo } from 'react';
 import { motion } from 'framer-motion';
 import ParallaxSection from '@/components/ParallaxSection';
+
+interface Profile {
+  name: string;
+  role: string;
+  subtitle: string;
+  instagram: string;
+  instagramUrl: string;
+  image: string;
+}
+
+const ProfileCard = memo(({ profile, index }: { profile: Profile; index: number }) => (
+  <motion.div
+    layout
+    initial={{ opacity: 0, y: 30 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true, margin: "-50px" }}
+    transition={{ duration: 0.4, delay: index * 0.08 }}
+    className="group w-full max-w-[350px]"
+  >
+    <div className="h-full p-6 rounded-3xl liquid-glass liquid-hover transition-all duration-500 hover:-translate-y-2 group-hover:border-white/20 select-none">
+      <div className="flex flex-col items-center">
+        <div className="relative w-32 h-32 mb-6 rounded-full overflow-hidden border-2 border-white/10 group-hover:border-white/30 transition-all duration-500 shadow-inner">
+          <img
+            src={profile.image}
+            alt={profile.name}
+            loading="lazy"
+            className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+        </div>
+        <h3 className="text-2xl font-bold mb-1 text-white group-hover:text-glow transition-all duration-300">
+          {profile.name}
+        </h3>
+        <p className="text-lg font-medium text-white/80 mb-2">
+          {profile.role}
+        </p>
+        <p className="text-sm tracking-widest uppercase text-white/40 mb-6">
+          {profile.subtitle}
+        </p>
+
+        {profile.instagram && (
+          <a
+            href={profile.instagramUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs text-white/50 hover:text-white transition-colors border border-white/10 px-6 py-2 rounded-full hover:bg-white/10 hover:border-white/30 backdrop-blur-md"
+          >
+            {profile.instagram}
+          </a>
+        )}
+      </div>
+    </div>
+  </motion.div>
+));
+
+ProfileCard.displayName = 'ProfileCard';
 
 const profiles = [
   {
@@ -72,47 +129,7 @@ const Profiles = () => {
         </motion.h1>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto place-items-center">
           {profiles.map((profile, index) => (
-            <motion.div
-              layout
-              key={profile.name}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="group w-full max-w-[350px]"
-            >
-              <div className="h-full p-6 rounded-3xl liquid-glass liquid-hover transition-all duration-500 hover:-translate-y-2 group-hover:border-white/20 select-none">
-                <div className="flex flex-col items-center">
-                  <div className="relative w-32 h-32 mb-6 rounded-full overflow-hidden border-2 border-white/10 group-hover:border-white/30 transition-all duration-500 shadow-inner">
-                    <img
-                      src={profile.image}
-                      alt={profile.name}
-                      className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-                  </div>
-                  <h3 className="text-2xl font-bold mb-1 text-white group-hover:text-glow transition-all duration-300">
-                    {profile.name}
-                  </h3>
-                  <p className="text-lg font-medium text-white/80 mb-2">
-                    {profile.role}
-                  </p>
-                  <p className="text-sm tracking-widest uppercase text-white/40 mb-6">
-                    {profile.subtitle}
-                  </p>
-
-                  {profile.instagram && (
-                    <a
-                      href={profile.instagramUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-xs text-white/50 hover:text-white transition-colors border border-white/10 px-6 py-2 rounded-full hover:bg-white/10 hover:border-white/30 backdrop-blur-md"
-                    >
-                      {profile.instagram}
-                    </a>
-                  )}
-                </div>
-              </div>
-            </motion.div>
+            <ProfileCard key={profile.name} profile={profile} index={index} />
           ))}
         </div>
       </div>

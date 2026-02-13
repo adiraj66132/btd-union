@@ -11,7 +11,7 @@ const Home = () => {
   return (
     <div className="min-h-screen relative overflow-hidden">
       {/* Background Spotlight Effect specifically for Home */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-red-500/20 blur-[120px] rounded-full pointer-events-none z-0" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-red-500/15 blur-[80px] rounded-full pointer-events-none z-0" />
 
       <ParallaxSection offset={50} className="min-h-screen flex items-center justify-center relative z-10">
         <div className="container mx-auto px-4 text-center space-y-8">
