@@ -1,5 +1,5 @@
+import { useState, useEffect, useCallback, memo } from 'react';
 import { Menu, X } from 'lucide-react';
-import { useState, useEffect, memo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ThemeSwitch from './ThemeSwitch';
 
@@ -19,7 +19,7 @@ const NavigationButton = memo(({ section, activeSection, onClick }: { section: S
       <motion.div
         layoutId="activeTab"
         className="absolute inset-0 bg-white/10 rounded-full backdrop-blur-md"
-        transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+        transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
       />
     )}
   </button>
@@ -47,52 +47,49 @@ const Header = () => {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    let ticking = false;
-    
-    const handleScroll = () => {
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          setScrolled(window.scrollY > 20);
-          
-          const scrollPosition = window.scrollY + window.innerHeight / 3;
-          let newSection: Section = 'home';
-          
-          for (const section of SECTIONS) {
-            const element = document.getElementById(section);
-            if (element) {
-              const { top } = element.getBoundingClientRect();
-              const elementTop = top + window.scrollY;
-              
-              if (scrollPosition >= elementTop) {
-                newSection = section;
-              }
-            }
-          }
-          
-          setActiveSection(newSection);
-          ticking = false;
-        });
-        ticking = true;
-      }
-    };
-
+    const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll();
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  useEffect(() => {
+    const sectionElements = SECTIONS
+      .map((section) => document.getElementById(section))
+      .filter((element): element is HTMLElement => Boolean(element));
+
+    if (sectionElements.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visibleEntries = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+
+        if (visibleEntries[0]?.target.id) {
+          setActiveSection(visibleEntries[0].target.id as Section);
+        }
+      },
+      {
+        root: null,
+        rootMargin: '-35% 0px -45% 0px',
+        threshold: [0.2, 0.4, 0.6, 0.8],
+      }
+    );
+
+    for (const element of sectionElements) observer.observe(element);
+
+    return () => observer.disconnect();
+  }, []);
+
   const scrollToSection = useCallback((sectionId: Section) => {
     const element = document.getElementById(sectionId);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
       setActiveSection(sectionId);
       setIsMobileMenuOpen(false);
     }
   }, []);
-
-  const handleNavClick = useCallback((section: Section) => {
-    scrollToSection(section);
-  }, [scrollToSection]);
 
   return (
     <header
@@ -115,7 +112,6 @@ const Header = () => {
             </span>
           </button>
 
-          {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-2 bg-black/20 backdrop-blur-lg p-1 rounded-full border border-white/5">
             {SECTIONS.map((section) => (
               <NavigationButton key={section} section={section} activeSection={activeSection} onClick={() => scrollToSection(section)} />
@@ -125,7 +121,6 @@ const Header = () => {
             </div>
           </nav>
 
-          {/* Mobile Menu Button */}
           <button
             className="md:hidden p-2 rounded-full hover:bg-white/10 transition-colors"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -138,7 +133,6 @@ const Header = () => {
           </button>
         </div>
 
-        {/* Mobile Navigation Menu */}
         <AnimatePresence>
           {isMobileMenuOpen && (
             <motion.nav
