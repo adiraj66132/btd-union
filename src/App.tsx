@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 import { Suspense, lazy } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -24,7 +24,7 @@ const queryClient = new QueryClient({
 
 const Loader = ({ onComplete }: { onComplete: () => void }) => {
   useEffect(() => {
-    const timer = setTimeout(onComplete, 1800);
+    const timer = setTimeout(onComplete, 800);
     return () => clearTimeout(timer);
   }, [onComplete]);
 
@@ -63,13 +63,13 @@ const Loader = ({ onComplete }: { onComplete: () => void }) => {
   );
 };
 
-const LoadingFallback = () => (
+const LoadingFallback = memo(() => (
   <div className="min-h-screen w-full flex items-center justify-center">
     <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-red-500" />
   </div>
-);
+));
 
-const AppContent = () => (
+const AppContent = memo(() => (
   <>
     <Header />
     <main className="w-full">
@@ -86,7 +86,7 @@ const AppContent = () => (
       </Suspense>
     </main>
   </>
-);
+));
 
 const App = () => {
   const [isLoading, setIsLoading] = useState(true);

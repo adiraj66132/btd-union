@@ -1,5 +1,5 @@
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { useRef, ReactNode, useEffect, useState } from 'react';
+import { useRef, ReactNode, useEffect, useState, memo } from 'react';
 
 interface ParallaxSectionProps {
     children: ReactNode;
@@ -8,10 +8,10 @@ interface ParallaxSectionProps {
     id?: string;
 }
 
-const ParallaxSection = ({ children, offset = 30, className = "", id = "" }: ParallaxSectionProps) => {
+const ParallaxSection = memo(({ children, offset = 30, className = "", id = "" }: ParallaxSectionProps) => {
     const ref = useRef(null);
     const [isInView, setIsInView] = useState(false);
-    
+
     const { scrollYProgress } = useScroll({
         target: ref,
         offset: ["start end", "end start"]
@@ -31,8 +31,8 @@ const ParallaxSection = ({ children, offset = 30, className = "", id = "" }: Par
 
     return (
         <section ref={ref} id={id} className={`relative overflow-hidden ${className}`}>
-            <motion.div 
-                style={{ y: isInView ? y : 0, opacity: isInView ? opacity : 0.3 }} 
+            <motion.div
+                style={{ y: isInView ? y : 0, opacity: isInView ? opacity : 0.3 }}
                 className="w-full h-full"
                 transition={{ type: "tween", duration: 0.3 }}
             >
@@ -40,6 +40,8 @@ const ParallaxSection = ({ children, offset = 30, className = "", id = "" }: Par
             </motion.div>
         </section>
     );
-};
+});
+
+ParallaxSection.displayName = 'ParallaxSection';
 
 export default ParallaxSection;

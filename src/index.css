@@ -41,7 +41,6 @@
     background-position: center top;
     background-repeat: no-repeat;
     background-size: 100% 100vh;
-    will-change: background-image;
   }
 
   /* Add a custom scroll animation to make it slower */
@@ -117,6 +116,7 @@
   /* Liquid Glass Theme Utilities */
   .liquid-glass {
     @apply bg-white/5 backdrop-blur-lg border border-white/10;
+    contain: layout style paint;
     background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.01));
     box-shadow:
       0 4px 16px -1px rgba(0, 0, 0, 0.15),
@@ -126,6 +126,7 @@
 
   .liquid-glass-strong {
     @apply bg-white/10 backdrop-blur-xl border border-white/15;
+    contain: layout style paint;
     background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03));
     box-shadow:
       0 8px 24px 0 rgba(0, 0, 0, 0.25),
@@ -134,16 +135,18 @@
   }
 
   .liquid-hover {
-    @apply transition-all duration-500 ease-out;
-    will-change: transform, box-shadow, background;
+    @apply transition-all ease-in-out;
+    transition-duration: 800ms;
   }
 
   .liquid-hover:hover {
-    @apply bg-white/10 border-white/30;
+    @apply bg-white/10 border-white/20;
+    will-change: transform, box-shadow;
     box-shadow:
-      0 20px 40px -5px rgba(0, 0, 0, 0.3),
-      0 0 1px 0 rgba(255, 255, 255, 0.6) inset,
-      0 1px 0 0 rgba(255, 255, 255, 0.3) inset;
-    background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.05));
+      0 10px 30px -5px rgba(0, 0, 0, 0.2),
+      0 0 1px 0 rgba(255, 255, 255, 0.4) inset,
+      0 1px 0 0 rgba(255, 255, 255, 0.2) inset;
+    background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
+    transform: translateY(-4px);
   }
 }

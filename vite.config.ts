@@ -4,7 +4,6 @@ import path from "path";
 import { componentTagger } from "lovable-tagger";
 import compression from "vite-plugin-compression";
 
-// https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
@@ -18,6 +17,10 @@ export default defineConfig(({ mode }) => ({
       algorithm: 'brotliCompress',
       ext: '.br',
     }),
+    compression({
+      algorithm: 'gzip',
+      ext: '.gz',
+    }),
   ].filter(Boolean),
   resolve: {
     alias: {
@@ -27,32 +30,48 @@ export default defineConfig(({ mode }) => ({
   build: {
     target: 'esnext',
     minify: 'terser',
+    terserOptions: {
+      compress: { drop_console: true, drop_debugger: true, passes: 2 },
+      mangle: true,
+    },
     cssMinify: true,
     rollupOptions: {
       output: {
-        manualChunks: {
-          'vendor': [
-            'react',
-            'react-dom',
-            'react-router-dom',
-            '@tanstack/react-query',
-            'framer-motion'
-          ],
-          'ui': [
-            '@radix-ui/react-accordion',
-            '@radix-ui/react-alert-dialog',
-            '@radix-ui/react-avatar',
-            '@radix-ui/react-dialog',
-            '@radix-ui/react-dropdown-menu'
-          ]
+        manualChunks: (id) => {
+          if (id.includes('node_modules')) {
+            if (id.includes('react') || id.includes('scheduler')) {
+              return 'react-vendor';
+            }
+            if (id.includes('@tanstack')) {
+              return 'query';
+            }
+            if (id.includes('framer-motion')) {
+              return 'animation';
+            }
+            if (id.includes('recharts')) {
+              return 'charts';
+            }
+            if (id.includes('@radix-ui')) {
+              return 'radix';
+            }
+            if (id.includes('lucide-react')) {
+              return 'icons';
+            }
+            return 'vendor';
+          }
         }
       }
     },
     chunkSizeWarningLimit: 1000,
-    sourcemap: mode === 'development'
+    sourcemap: mode === 'development',
+    cssCodeSplit: true,
+    modulePreload: true,
   },
   optimizeDeps: {
-    include: ['react', 'react-dom', 'react-router-dom', 'framer-motion']
+    include: ['react', 'react-dom', 'react-router-dom', 'framer-motion'],
+    esbuildOptions: {
+      treeShaking: true,
+    }
   },
   css: {
     devSourcemap: true
