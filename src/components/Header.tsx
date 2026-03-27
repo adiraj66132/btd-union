@@ -1,5 +1,5 @@
 import { Menu, X } from 'lucide-react';
-import { useState, useEffect, memo, useCallback } from 'react';
+import { useState, useEffect, memo, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ThemeSwitch from './ThemeSwitch';
 
@@ -18,7 +18,7 @@ const NavigationButton = memo(({ section, activeSection, onClick }: { section: S
     {activeSection === section && (
       <motion.div
         layoutId="activeTab"
-        className="absolute inset-0 bg-white/10 rounded-full backdrop-blur-md"
+        className="absolute inset-0 bg-white/10 rounded-full backdrop-blur-sm"
         transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
       />
     )}
@@ -45,31 +45,44 @@ const Header = () => {
   const [activeSection, setActiveSection] = useState<Section>('home');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const observersRef = useRef<IntersectionObserver[]>([]);
+
+  useEffect(() => {
+    observersRef.current.forEach(obs => obs.disconnect());
+
+    const sectionObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setActiveSection(entry.target.id as Section);
+          }
+        });
+      },
+      { threshold: 0.4, rootMargin: '-100px 0px -40% 0px' }
+    );
+
+    SECTIONS.forEach((section) => {
+      const element = document.getElementById(section);
+      if (element) {
+        sectionObserver.observe(element);
+      }
+    });
+
+    observersRef.current.push(sectionObserver);
+
+    return () => {
+      observersRef.current.forEach((obs) => obs.disconnect());
+      observersRef.current = [];
+    };
+  }, []);
 
   useEffect(() => {
     let ticking = false;
-    
+
     const handleScroll = () => {
       if (!ticking) {
         window.requestAnimationFrame(() => {
           setScrolled(window.scrollY > 20);
-          
-          const scrollPosition = window.scrollY + window.innerHeight / 3;
-          let newSection: Section = 'home';
-          
-          for (const section of SECTIONS) {
-            const element = document.getElementById(section);
-            if (element) {
-              const { top } = element.getBoundingClientRect();
-              const elementTop = top + window.scrollY;
-              
-              if (scrollPosition >= elementTop) {
-                newSection = section;
-              }
-            }
-          }
-          
-          setActiveSection(newSection);
           ticking = false;
         });
         ticking = true;
@@ -97,7 +110,7 @@ const Header = () => {
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 border-b ${scrolled
-        ? 'bg-background/70 backdrop-blur-xl border-white/5 py-4'
+        ? 'bg-background/70 backdrop-blur-md border-white/5 py-4'
         : 'bg-transparent border-transparent py-6'
         }`}
     >
@@ -116,7 +129,7 @@ const Header = () => {
           </button>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-2 bg-black/20 backdrop-blur-lg p-1 rounded-full border border-white/5">
+          <nav className="hidden md:flex items-center space-x-2 bg-black/20 backdrop-blur-md p-1 rounded-full border border-white/5">
             {SECTIONS.map((section) => (
               <NavigationButton key={section} section={section} activeSection={activeSection} onClick={() => scrollToSection(section)} />
             ))}

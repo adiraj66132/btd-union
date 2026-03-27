@@ -115,8 +115,14 @@ const Profiles = () => {
   return (
     <ParallaxSection className="min-h-screen pt-20 pb-20 relative overflow-hidden">
       {/* Background elements */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-[100px] -z-10" />
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-[100px] -z-10" />
+      <div 
+        className="absolute top-1/4 left-1/4 w-96 h-96 -z-10 blur-gradient pointer-events-none"
+        style={{"--blur-color": "rgba(59, 130, 246, 0.1)"} as React.CSSProperties}
+      />
+      <div 
+        className="absolute bottom-1/4 right-1/4 w-96 h-96 -z-10 blur-gradient pointer-events-none"
+        style={{"--blur-color": "rgba(168, 85, 247, 0.1)"} as React.CSSProperties}
+      />
 
       <div className="container mx-auto px-4 relative z-10">
         <motion.h1

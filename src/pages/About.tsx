@@ -37,7 +37,10 @@ const About = () => {
   return (
     <ParallaxSection className="min-h-screen pt-20 pb-20 relative overflow-hidden">
       {/* Background elements */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-red-500/5 rounded-full blur-[120px] -z-10" />
+      <div 
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] -z-10 blur-gradient pointer-events-none"
+        style={{"--blur-color": "rgba(239, 68, 68, 0.05)"} as React.CSSProperties}
+      />
 
       <div className="container mx-auto px-4 max-w-3xl relative z-10">
         <motion.h1

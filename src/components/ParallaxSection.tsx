@@ -9,8 +9,9 @@ interface ParallaxSectionProps {
 }
 
 const ParallaxSection = memo(({ children, offset = 30, className = "", id = "" }: ParallaxSectionProps) => {
-    const ref = useRef(null);
+    const ref = useRef<HTMLElement>(null);
     const [isInView, setIsInView] = useState(false);
+    const observerRef = useRef<IntersectionObserver | null>(null);
 
     const { scrollYProgress } = useScroll({
         target: ref,
@@ -21,16 +22,25 @@ const ParallaxSection = memo(({ children, offset = 30, className = "", id = "" }
     const opacity = useTransform(scrollYProgress, [0, 0.1, 0.9, 1], [0.3, 1, 1, 0.3]);
 
     useEffect(() => {
-        const observer = new IntersectionObserver(
+        const element = ref.current;
+        if (!element) return;
+
+        observerRef.current?.disconnect();
+
+        observerRef.current = new IntersectionObserver(
             ([entry]) => setIsInView(entry.isIntersecting),
             { threshold: 0.1, rootMargin: "50px" }
         );
-        if (ref.current) observer.observe(ref.current);
-        return () => observer.disconnect();
-    }, []);
+
+        observerRef.current.observe(element);
+
+        return () => {
+            observerRef.current?.disconnect();
+        };
+    }, [id]);
 
     return (
-        <section ref={ref} id={id} className={`relative overflow-hidden ${className}`}>
+        <section ref={ref} id={id} className={`relative overflow-hidden content-visibility-auto ${className}`}>
             <motion.div
                 style={{ y: isInView ? y : 0, opacity: isInView ? opacity : 0.3 }}
                 className="w-full h-full"

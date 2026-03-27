@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Moon, Sun } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -10,8 +10,13 @@ const ThemeSwitch = () => {
   const handleThemeChange = () => {
     setIsDark(!isDark);
     setShowPreview(true);
-    setTimeout(() => setShowPreview(false), 2000);
   };
+
+  useEffect(() => {
+    if (!showPreview) return;
+    const timeoutId = setTimeout(() => setShowPreview(false), 2000);
+    return () => clearTimeout(timeoutId);
+  }, [showPreview]);
 
   return (
     <>
